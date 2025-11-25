@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>מצב מלאי ודוחות</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      padding: 1.5rem;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.35), rgba(230,240,255,0.2)),
+        url("books-bg.jpg") center/cover no-repeat fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.3);
+      padding: 1.7rem 1.6rem 1.4rem;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-bottom: 0.6rem;
+      font-size: 0.85rem;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      text-align: right;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 0.9rem;
+      text-align: right;
+    }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .chip {
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: #eef2ff;
+      font-size: 0.8rem;
+      color: #3730a3;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    input[type="text"] {
+      padding: 0.35rem 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 0.85rem;
+      min-width: 160px;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79,70,229,0.4);
+    }
+
+    .btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .table-wrapper {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      max-height: 450px;
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #f3f4f6;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 0.3rem 0.35rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .qty-low {
+      color: #b91c1c;
+      font-weight: 600;
+    }
+
+    .msg {
+      font-size: 0.8rem;
+      color: #dc2626;
+      min-height: 1rem;
+      margin-top: 0.4rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back">← חזרה למסך הבית</a>
+
+    <h1>מצב מלאי ודוחות</h1>
+    <p class="subtitle">סקירת מלאי, חיפוש ספרים, והורדת דוחות לקובצי אקסל (TSV).</p>
+
+    <div class="summary">
+      <div class="chip" id="summaryBooks">סה״כ ספרים: …</div>
+      <div class="chip" id="summaryQty">סה״כ עותקים במלאי: …</div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="חיפוש לפי שם, מחבר, הוצאה, ברקוד, מדף…">
+      <button class="btn btn-secondary" type="button" id="clearSearchBtn">איפוס חיפוש</button>
+      <button class="btn btn-primary" type="button" id="stockReportBtn">דוח מלאי לאקסל</button>
+      <button class="btn btn-primary" type="button" id="salesReportBtn">דוח מכירות לאקסל</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>ברקוד</th>
+            <th>שם ספר</th>
+            <th>מחבר</th>
+            <th>הוצאה</th>
+            <th>מדף</th>
+            <th>מחיר</th>
+            <th>כמות התחלתית</th>
+            <th>כמות נוכחית</th>
+          </tr>
+        </thead>
+        <tbody id="stockTableBody"></tbody>
+      </table>
+    </div>
+
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    let books = [];
+
+    function setMsg(text) {
+      document.getElementById('msg').textContent = text || '';
+    }
+
+    function renderSummary() {
+      const totalBooks = books.length;
+      const totalQty = books.reduce((sum, b) => sum + (b.current_qty || 0), 0);
+
+      document.getElementById('summaryBooks').textContent =
+        'סה״כ ספרים: ' + totalBooks;
+      document.getElementById('summaryQty').textContent =
+        'סה״כ עותקים במלאי: ' + totalQty;
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('stockTableBody');
+      tbody.innerHTML = '';
+
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      const filtered = books.filter(b => {
+        if (!q) return true;
+        const txt = [
+          b.title || '',
+          b.author || '',
+          b.publisher || '',
+          b.barcode || '',
+          b.shelf || ''
+        ].join(' ').toLowerCase();
+        return txt.includes(q);
+      });
+
+      filtered.forEach(b => {
+        const tr = document.createElement('tr');
+
+        const mk = (text) => {
+          const td = document.createElement('td');
+          td.textContent = text;
+          return td;
+        };
+
+        tr.appendChild(mk(b.id || ''));
+        tr.appendChild(mk(b.barcode || ''));
+        tr.appendChild(mk(b.title || ''));
+        tr.appendChild(mk(b.author || ''));
+        tr.appendChild(mk(b.publisher || ''));
+        tr.appendChild(mk(b.shelf || ''));
+        tr.appendChild(mk(b.price != null ? Number(b.price).toFixed(2) : '0.00'));
+        tr.appendChild(mk(b.initial_qty != null ? b.initial_qty : ''));
+        const qtyTd = mk(b.current_qty != null ? b.current_qty : '');
+        if ((b.current_qty || 0) <= 1) {
+          qtyTd.classList.add('qty-low');
+        }
+        tr.appendChild(qtyTd);
+
+        tbody.appendChild(tr);
+      });
+
+      renderSummary();
+    }
+
+    async function loadBooks() {
+      setMsg('');
+      try {
+        const res = await fetch('/api/books');
+        const data = await res.json();
+        books = Array.isArray(data) ? data : [];
+        renderTable();
+      } catch (err) {
+        console.error(err);
+        setMsg('שגיאה בטעינת נתוני מלאי.');
+      }
+    }
+
+    function downloadStockReport() {
+      // אין JSON – פשוט קובץ TSV להורדה
+      window.open('/api/reports/stock-csv', '_blank');
+    }
+
+    function downloadSalesReport() {
+      window.open('/api/reports/sales-csv', '_blank');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('stockReportBtn').addEventListener('click', downloadStockReport);
+      document.getElementById('salesReportBtn').addEventListener('click', downloadSalesReport);
+
+      document.getElementById('searchInput').addEventListener('input', renderTable);
+      document.getElementById('clearSearchBtn').addEventListener('click', () => {
+        document.getElementById('searchInput').value = '';
+        renderTable();
+      });
+
+      loadBooks();
+    });
+  </script>
+</body>
+</html>

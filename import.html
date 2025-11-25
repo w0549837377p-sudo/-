@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>ייבוא ספרים מאקסל</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      padding: 1.5rem;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.35), rgba(230,240,255,0.2)),
+        url("books-bg.jpg") center/cover no-repeat fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.3);
+      padding: 1.8rem 1.6rem 1.4rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      text-align: right;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 1.1rem;
+      text-align: right;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-bottom: 0.6rem;
+      font-size: 0.85rem;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .step {
+      font-size: 0.85rem;
+      margin-bottom: 0.3rem;
+      color: #374151;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      padding: 0.6rem 0.7rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      resize: vertical;
+      margin-bottom: 0.6rem;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79,70,229,0.4);
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .msg {
+      font-size: 0.85rem;
+      min-height: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .msg.error { color: #dc2626; }
+    .msg.ok { color: #16a34a; }
+
+    .preview-wrapper {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      max-height: 260px;
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #f3f4f6;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 0.3rem 0.35rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back">← חזרה למסך הבית</a>
+
+    <h1>ייבוא ספרים מאקסל</h1>
+    <p class="subtitle">
+      העתק טבלה מאקסל (כולל שורה ראשונה של כותרות) והדבק כאן.
+      שמות העמודות צריכים להיות:
+      <strong>barcode, title, author, publisher, shelf, price, initialQty</strong>.
+    </p>
+
+    <p class="step">שלב 1: העתק מאקסל והדבק בטקסט למטה:</p>
+    <textarea id="tsvInput" placeholder="הדבק כאן את הנתונים מאקסל (tab-separated)..."></textarea>
+
+    <div class="buttons">
+      <button class="btn btn-secondary" type="button" id="previewBtn">תצוגה מקדימה</button>
+      <button class="btn btn-primary" type="button" id="importBtn">ייבוא למערכת</button>
+    </div>
+
+    <div id="msg" class="msg"></div>
+
+    <div class="preview-wrapper" id="previewWrapper" style="display:none;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>ברקוד</th>
+            <th>שם ספר</th>
+            <th>מחבר</th>
+            <th>הוצאה</th>
+            <th>מדף</th>
+            <th>מחיר</th>
+            <th>כמות התחלתית</th>
+          </tr>
+        </thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      טיפ: באקסל – סמן את כל הטבלה → Ctrl+C → חזור לכאן → קליק בתוך התיבה → Ctrl+V → תצוגה מקדימה → ייבוא.
+    </p>
+  </div>
+
+  <script>
+    let parsedRows = [];
+
+    function setMsg(text, type) {
+      const el = document.getElementById('msg');
+      el.textContent = text || '';
+      el.className = 'msg ' + (type || '');
+    }
+
+    function parseTsv(text) {
+      const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+      if (!lines.length) return [];
+
+      const header = lines[0].split('\t').map(h => h.trim());
+      const idx = {
+        barcode: header.indexOf('barcode'),
+        title: header.indexOf('title'),
+        author: header.indexOf('author'),
+        publisher: header.indexOf('publisher'),
+        shelf: header.indexOf('shelf'),
+        price: header.indexOf('price'),
+        initialQty: header.indexOf('initialQty')
+      };
+
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split('\t');
+        if (!cols.some(c => c.trim() !== '')) continue;
+
+        const row = {
+          barcode: idx.barcode >= 0 ? (cols[idx.barcode] || '').trim() : '',
+          title: idx.title >= 0 ? (cols[idx.title] || '').trim() : '',
+          author: idx.author >= 0 ? (cols[idx.author] || '').trim() : '',
+          publisher: idx.publisher >= 0 ? (cols[idx.publisher] || '').trim() : '',
+          shelf: idx.shelf >= 0 ? (cols[idx.shelf] || '').trim() : '',
+          price: 0,
+          initialQty: 0
+        };
+
+        if (idx.price >= 0 && cols[idx.price] != null && cols[idx.price].trim() !== '') {
+          const p = parseFloat(cols[idx.price].replace(',', '.'));
+          row.price = isNaN(p) ? 0 : p;
+        }
+
+        if (idx.initialQty >= 0 && cols[idx.initialQty] != null && cols[idx.initialQty].trim() !== '') {
+          const q = parseInt(cols[idx.initialQty], 10);
+          row.initialQty = isNaN(q) ? 0 : q;
+        }
+
+        rows.push(row);
+      }
+      return rows;
+    }
+
+    function renderPreview(rows) {
+      const wrapper = document.getElementById('previewWrapper');
+      const tbody = document.getElementById('previewBody');
+      tbody.innerHTML = '';
+
+      if (!rows.length) {
+        wrapper.style.display = 'none';
+        return;
+      }
+
+      rows.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+
+        const mk = (text) => {
+          const td = document.createElement('td');
+          td.textContent = text;
+          return td;
+        };
+
+        tr.appendChild(mk(idx + 1));
+        tr.appendChild(mk(row.barcode));
+        tr.appendChild(mk(row.title));
+        tr.appendChild(mk(row.author));
+        tr.appendChild(mk(row.publisher));
+        tr.appendChild(mk(row.shelf));
+        tr.appendChild(mk(row.price));
+        tr.appendChild(mk(row.initialQty));
+
+        tbody.appendChild(tr);
+      });
+
+      wrapper.style.display = 'block';
+    }
+
+    document.getElementById('previewBtn').addEventListener('click', () => {
+      const text = document.getElementById('tsvInput').value;
+      if (!text.trim()) {
+        setMsg('אין נתונים להציג.', 'error');
+        return;
+      }
+      parsedRows = parseTsv(text);
+      if (!parsedRows.length) {
+        setMsg('לא נמצאו שורות תקינות לאחר כותרת.', 'error');
+        renderPreview([]);
+        return;
+      }
+      setMsg('נמצאו ' + parsedRows.length + ' שורות לייבוא (תצוגה מוגבלת לטבלה).', 'ok');
+      renderPreview(parsedRows.slice(0, 200)); // להגביל להצגה
+    });
+
+    document.getElementById('importBtn').addEventListener('click', async () => {
+      if (!parsedRows.length) {
+        // אם עדיין לא נעשתה תצוגה מקדימה – ננסה לפרש עכשיו
+        const text = document.getElementById('tsvInput').value;
+        if (!text.trim()) {
+          setMsg('אין נתונים לייבוא.', 'error');
+          return;
+        }
+        parsedRows = parseTsv(text);
+      }
+
+      if (!parsedRows.length) {
+        setMsg('לא נמצאו שורות לייבוא.', 'error');
+        return;
+      }
+
+      setMsg('מייבא, רגע...', '');
+      try {
+        const res = await fetch('/api/import/books-tsv', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows: parsedRows })
+        });
+
+        const raw = await res.text();
+        let data;
+        try {
+          data = JSON.parse(raw);
+        } catch (e) {
+          console.error('Non-JSON response:', raw);
+          setMsg('שגיאה: השרת החזיר תשובה לא תקינה (לא JSON). ייתכן שהנתיב שגוי או שיש שגיאה בצד השרת.', 'error');
+          return;
+        }
+
+        if (!res.ok || !data || data.success === false) {
+          setMsg(data && data.error ? data.error : 'שגיאה בייבוא ספרים.', 'error');
+          return;
+        }
+
+        setMsg(
+          'ייבוא הסתיים: ' +
+          (data.insertedCount || 0) +
+          ' ספרים נוספו, ' +
+          (data.skippedExisting || 0) +
+          ' דילוג על ברקודים שכבר קיימים.',
+          'ok'
+        );
+
+      } catch (err) {
+        console.error(err);
+        setMsg('שגיאה בתקשורת עם השרת.', 'error');
+      }
+    });
+  </script>
+</body>
+</html>

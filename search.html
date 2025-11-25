@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>חיפוש ספרים ומוכרים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      direction: rtl;
+      text-align: right;
+      color: #222;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.9), rgba(240,245,255,0.9)),
+        url("books-bg.jpg") center/cover no-repeat fixed;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(6px);
+      z-index: 1;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1100px;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    header.nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    header.nav .links a {
+      margin-left: 0.7rem;
+      text-decoration: none;
+      color: #3a52c5;
+      font-size: 0.9rem;
+    }
+    header.nav .links a:hover {
+      text-decoration: underline;
+    }
+
+    header.nav h1 {
+      font-size: 1.6rem;
+    }
+
+    .badge {
+      padding: 0.2rem 0.75rem;
+      border-radius: 999px;
+      background: #eef3ff;
+      color: #3a52c5;
+      font-size: 0.8rem;
+      border: 1px solid #d5defc;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section {
+      background: #f9f9ff;
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid #e2e5f4;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+      color: #2a2a70;
+    }
+
+    p.small {
+      font-size: 0.82rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 0.85rem;
+      color: #555;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border-radius: 10px;
+      border: 1px solid #ccd3f1;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #3a52c5;
+      box-shadow: 0 0 0 2px rgba(58,82,197,0.18);
+    }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #3a52c5, #5e8bff);
+      color: #fff;
+      margin-top: 0.35rem;
+      box-shadow: 0 8px 18px rgba(58,82,197,0.35);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(58,82,197,0.45);
+    }
+
+    .field-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      border: 1px solid #e1e4f3;
+      padding: 0.35rem 0.45rem;
+    }
+
+    th {
+      background: #eef1ff;
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafbff;
+    }
+
+    tbody tr:hover {
+      background: #f0f3ff;
+    }
+
+    #bookResults, #sellerResults {
+      margin-top: 0.4rem;
+      max-height: 340px;
+      overflow: auto;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 1rem; }
+      .card { padding: 1.4rem 1.2rem; }
+      header.nav h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="shell">
+    <div class="card">
+      <header class="nav">
+        <div>
+          <h1>חיפוש ספרים ומוכרים</h1>
+          <div style="font-size:0.85rem;color:#666;">חיפוש חופשי לפי שם, מחבר, ברקוד, מדף או שם מוכר.</div>
+        </div>
+        <div class="links">
+          <a href="/">מסך ראשי</a>
+          <a href="/pos.html">עמדת מכירה</a>
+          <a href="/admin.html">ניהול נתונים</a>
+          <a href="/stock.html">מצב מלאי</a>
+          <a href="/labels.html">הדפסת ברקודים</a>
+        </div>
+        <div class="badge">עבודה מקומית</div>
+      </header>
+
+      <div class="layout">
+        <!-- צד ספרים -->
+        <section class="section">
+          <h2>📚 חיפוש ספרים</h2>
+          <p class="small">ניתן לחפש לפי שם ספר, מחבר, ברקוד או מספר מדף. החיפוש תומך גם בחלק מהמילה.</p>
+
+          <div class="field-row">
+            <div style="flex:1;">
+              <label>טקסט לחיפוש ספר:</label>
+              <input type="text" id="bookQuery" placeholder="לדוגמה: משנה / כהן / B000123 / 3A">
+            </div>
+            <button onclick="searchBooks()">חפש ספרים</button>
+          </div>
+
+          <div id="bookResults"></div>
+        </section>
+
+        <!-- צד מוכרים -->
+        <section class="section">
+          <h2>👤 חיפוש מוכרים</h2>
+          <p class="small">חיפוש לפי שם מוכר או ברקוד מוכר.</p>
+
+          <div class="field-row">
+            <div style="flex:1;">
+              <label>טקסט לחיפוש מוכר:</label>
+              <input type="text" id="sellerQuery" placeholder="לדוגמה: יוסי / S001">
+            </div>
+            <button onclick="searchSellers()">חפש מוכרים</button>
+          </div>
+
+          <div id="sellerResults"></div>
+        </section>
+      </div>
+
+      <div class="footer">
+        לחיפוש מהיר – הקלד חלק מהשם ולחץ Enter.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function searchBooks() {
+      const q = document.getElementById('bookQuery').value.trim();
+      const url = q ? '/api/books/search?q=' + encodeURIComponent(q) : '/api/books/search';
+      const res = await fetch(url);
+      const data = await res.json();
+      const container = document.getElementById('bookResults');
+      container.innerHTML = '';
+      if (!Array.isArray(data) || data.length === 0) {
+        container.textContent = 'לא נמצאו ספרים.';
+        return;
+      }
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>ברקוד</th>
+            <th>שם ספר</th>
+            <th>מחבר</th>
+            <th>הוצאה</th>
+            <th>מדף</th>
+            <th>מלאי</th>
+            <th>מחיר</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector('tbody');
+      data.forEach(b => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${b.barcode || ''}</td>
+          <td>${b.title || ''}</td>
+          <td>${b.author || ''}</td>
+          <td>${b.publisher || ''}</td>
+          <td>${b.shelf || ''}</td>
+          <td>${b.current_qty ?? 0}</td>
+          <td>${b.price != null ? b.price : ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      container.appendChild(table);
+    }
+
+    async function searchSellers() {
+      const q = document.getElementById('sellerQuery').value.trim();
+      const url = q ? '/api/sellers/search?q=' + encodeURIComponent(q) : '/api/sellers/search';
+      const res = await fetch(url);
+      const data = await res.json();
+      const container = document.getElementById('sellerResults');
+      container.innerHTML = '';
+      if (!Array.isArray(data) || data.length === 0) {
+        container.textContent = 'לא נמצאו מוכרים.';
+        return;
+      }
+      const table = document.createElement('table');
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>שם</th>
+            <th>ברקוד</th>
+            <th>סטטוס</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+      const tbody = table.querySelector('tbody');
+      data.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${s.name || ''}</td>
+          <td>${s.barcode || ''}</td>
+          <td>${s.active === false ? 'לא פעיל' : 'פעיל'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      container.appendChild(table);
+    }
+
+    // Enter מפעיל חיפוש
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('bookQuery').addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          searchBooks();
+          e.preventDefault();
+        }
+      });
+      document.getElementById('sellerQuery').addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          searchSellers();
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

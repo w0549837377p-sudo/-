@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>הדפסת ברקודים - חנות ספרים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      direction: rtl;
+      text-align: right;
+      color: #222;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.9), rgba(240,245,255,0.9)),
+        url("books-bg.jpg") center/cover no-repeat fixed;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.4);
+      backdrop-filter: blur(6px);
+      z-index: 1;
+    }
+
+    .shell {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 1000px;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.96);
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+      border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    header.nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+
+    header.nav .links a {
+      margin-left: 0.7rem;
+      text-decoration: none;
+      color: #3a52c5;
+      font-size: 0.9rem;
+    }
+
+    header.nav .links a:hover {
+      text-decoration: underline;
+    }
+
+    header.nav h1 {
+      font-size: 1.6rem;
+    }
+
+    .badge {
+      padding: 0.2rem 0.75rem;
+      border-radius: 999px;
+      background: #eef3ff;
+      color: #3a52c5;
+      font-size: 0.8rem;
+      border: 1px solid #d5defc;
+      white-space: nowrap;
+    }
+
+    .section {
+      background: #f9f9ff;
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem;
+      border: 1px solid #e2e5f4;
+      margin-bottom: 1.2rem;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+      color: #2a2a70;
+    }
+
+    p.small {
+      font-size: 0.82rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.45rem 0.6rem;
+      border-radius: 10px;
+      border: 1px solid #ccd3f1;
+      font-size: 0.9rem;
+      margin-top: 0.3rem;
+      margin-bottom: 0.6rem;
+    }
+
+    input:focus {
+      border-color: #3a52c5;
+      box-shadow: 0 0 0 2px rgba(58,82,197,0.18);
+      outline: none;
+    }
+
+    button {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #3a52c5, #5e8bff);
+      color: #fff;
+      margin-top: 0.3rem;
+      box-shadow: 0 8px 18px rgba(58,82,197,0.35);
+      transition: transform 0.12s.ease, box-shadow 0.12s ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(58,82,197,0.45);
+    }
+
+    .btn-secondary {
+      background: #f4f5ff;
+      color: #364152;
+      border: 1px solid #d4daf3;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.8rem;
+      margin-top: 0.6rem;
+    }
+
+    .layout-grid .field {
+      font-size: 0.8rem;
+    }
+
+    .layout-grid label {
+      display: block;
+      margin-bottom: 0.2rem;
+      color: #555;
+    }
+
+    .layout-grid input[type="number"],
+    .layout-grid input[type="text"] {
+      margin-bottom: 0;
+    }
+
+    #previewArea {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 0.8rem;
+      margin-top: 0.7rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .label {
+      border: 1px solid #d5d5d5;
+      border-radius: 10px;
+      padding: 0.3rem 0.4rem;
+      text-align: center;
+      font-size: 0.9rem;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .label-title {
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .barcode-img {
+      width: 100%;
+      max-height: 60px;
+      margin-top: 0.15rem;
+      object-fit: contain;
+    }
+
+    .price {
+      font-weight: 700;
+      margin-top: 0.05rem;
+    }
+
+    .store-name {
+      margin-top: 0.1rem;
+    }
+
+    .shelf {
+      margin-top: 0.1rem;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    .footer {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .controls-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      margin-top: 0.6rem;
+    }
+
+    .controls-inline > div {
+      min-width: 120px;
+      flex: 1 1 120px;
+    }
+
+    /* הגדרת דף להדפסה */
+    @page {
+      size: A4 portrait;
+      margin: 5mm;
+    }
+
+    /* מצב הדפסה – מסתירים את כל הדף, משאירים רק את המדבקות */
+    @media print {
+      body {
+        background: #fff !important;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+
+      #previewArea,
+      #previewArea * {
+        visibility: visible;
+      }
+
+      #previewArea {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        padding: 3mm;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        display: grid;
+        gap: 4mm;
+      }
+
+      .label {
+        box-shadow: none;
+        border: 1px dashed #ccc;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <div class="shell">
+    <div class="card">
+      <header class="nav">
+        <div>
+          <h1>הדפסת ברקודים</h1>
+          <div style="font-size:0.85rem;color:#666;">
+            מדבקות עם שם ספר, מחיר, שם חנות, מדף וברקוד (דרך TEC-IT).
+          </div>
+        </div>
+        <div class="links">
+          <a href="/">מסך ראשי</a>
+          <a href="/admin.html">ניהול נתונים</a>
+          <a href="/pos.html">עמדת מכירה</a>
+          <a href="/search.html">חיפוש</a>
+          <a href="/stock.html">מצב מלאי ודוחות</a>
+        </div>
+        <div class="badge">שירות ברקוד אונליין</div>
+      </header>
+
+      <section class="section">
+        <h2>🏷 יצירת מדבקות</h2>
+        <p class="small">
+          חיפוש ספר לפי שם/ברקוד, בחירת הספר, בחירת כמות מדבקות – והדפסה.
+          הברקודים עצמם נוצרים ע״י האתר barcode.tec-it.com.
+        </p>
+
+        <label>חיפוש ספר לפי שם או ברקוד:</label>
+        <input type="text" id="searchBook" placeholder="לדוגמה: משניות / 978123456...">
+        <button onclick="searchBook()">חפש</button>
+
+        <div id="bookDetails" style="margin-top:1rem;"></div>
+
+        <div class="controls" style="margin-top:1.2rem;">
+          <label>כמות מדבקות:</label>
+          <input type="number" id="labelQty" value="1" min="1" style="width:100px;">
+        </div>
+
+        <!-- אזור הגדרות עיצוב המדבקה -->
+        <div class="layout-grid">
+          <div class="field">
+            <label for="storeNameInput">שם חנות על המדבקה:</label>
+            <input type="text" id="storeNameInput" value="בנדיקט ספרים">
+          </div>
+          <div class="field">
+            <label for="titleFontInput">גודל כותרת ספר (px):</label>
+            <input type="number" id="titleFontInput" value="14" min="8" max="32">
+          </div>
+          <div class="field">
+            <label for="priceFontInput">גודל מחיר (px):</label>
+            <input type="number" id="priceFontInput" value="14" min="8" max="32">
+          </div>
+          <div class="field">
+            <label for="storeFontInput">גודל שם חנות (px):</label>
+            <input type="number" id="storeFontInput" value="12" min="8" max="32">
+          </div>
+          <div class="field">
+            <label for="labelsPerRowInput">מספר מדבקות בשורה:</label>
+            <input type="number" id="labelsPerRowInput" value="4" min="1" max="10">
+          </div>
+          <div class="field">
+            <label for="labelWidthInput">רוחב מדבקה (מ״מ):</label>
+            <input type="number" id="labelWidthInput" value="50" min="10" max="100">
+          </div>
+          <div class="field">
+            <label for="labelHeightInput">גובה מדבקה (מ״מ):</label>
+            <input type="number" id="labelHeightInput" value="30" min="10" max="80">
+          </div>
+        </div>
+
+        <div class="controls-inline">
+          <div>
+            <button onclick="generateLabels()">צור תצוגת מדבקות</button>
+          </div>
+          <div>
+            <button class="btn-secondary" onclick="window.print()">הדפס</button>
+          </div>
+          <div style="font-size:0.78rem;color:#777;">
+            אפשר לשחק עם גודל המדבקה (מ״מ) ומספר המדבקות בשורה עד שזה יושב טוב על הדף/מדבקה.
+          </div>
+        </div>
+
+        <div id="previewArea"></div>
+      </section>
+
+      <div class="footer">
+        ברקודים נוצרו באמצעות
+        <a href="https://barcode.tec-it.com/" target="_blank" rel="noopener noreferrer">
+          TEC-IT Barcode Generator
+        </a>.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let selectedBook = null;
+    window._labelSearchResults = [];
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    async function searchBook() {
+      const q = document.getElementById('searchBook').value.trim();
+      if (!q) {
+        alert('נא להזין טקסט לחיפוש');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/books/search?q=' + encodeURIComponent(q));
+        const data = await res.json();
+        const div = document.getElementById('bookDetails');
+        div.innerHTML = '';
+
+        if (!Array.isArray(data) || data.length === 0) {
+          div.textContent = 'לא נמצאו תוצאות.';
+          return;
+        }
+
+        window._labelSearchResults = data;
+
+        const table = document.createElement('table');
+        table.style.width = '100%';
+        table.style.borderCollapse = 'collapse';
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th style="border:1px solid #e1e4f3;padding:0.3rem;">בחר</th>
+              <th style="border:1px solid #e1e4f3;padding:0.3rem;">ברקוד</th>
+              <th style="border:1px solid #e1e4f3;padding:0.3rem;">שם ספר</th>
+              <th style="border:1px solid #e1e4f3;padding:0.3rem;">מחיר</th>
+              <th style="border:1px solid #e1e4f3;padding:0.3rem;">מדף</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        `;
+        const tbody = table.querySelector('tbody');
+
+        data.forEach((b, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td style="border:1px solid #e1e4f3;padding:0.3rem;text-align:center;">
+              <button type="button" onclick="selectBookIndex(${idx})">בחר</button>
+            </td>
+            <td style="border:1px solid #e1e4f3;padding:0.3rem;">${escapeHtml(b.barcode || '')}</td>
+            <td style="border:1px solid #e1e4f3;padding:0.3rem;">${escapeHtml(b.title || '')}</td>
+            <td style="border:1px solid #e1e4f3;padding:0.3rem;">${b.price || ''}</td>
+            <td style="border:1px solid #e1e4f3;padding:0.3rem;">${escapeHtml(b.shelf || '')}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        div.appendChild(table);
+      } catch (e) {
+        console.error(e);
+        alert('שגיאה בחיפוש ספר');
+      }
+    }
+
+    function selectBookIndex(idx) {
+      const b = window._labelSearchResults[idx];
+      if (!b) return;
+      selectedBook = b;
+      const div = document.getElementById('bookDetails');
+      div.innerHTML = `
+        <div style="margin-top:0.5rem;font-weight:600;">
+          נבחר: ${escapeHtml(b.title || '')}
+          <span style="color:#555;">(ברקוד ${escapeHtml(b.barcode || '')})</span>
+          | מחיר: ${b.price || 0} ₪
+          | מדף: ${escapeHtml(b.shelf || '')}
+        </div>
+      `;
+    }
+
+    function applyLabelLayout() {
+      const cols = parseInt(document.getElementById('labelsPerRowInput').value, 10) || 4;
+      const w = parseInt(document.getElementById('labelWidthInput').value, 10) || 50;
+      const h = parseInt(document.getElementById('labelHeightInput').value, 10) || 30;
+
+      const area = document.getElementById('previewArea');
+      area.style.gridTemplateColumns = `repeat(${cols}, ${w}mm)`;
+
+      document.querySelectorAll('.label').forEach(l => {
+        l.style.width = w + 'mm';
+        l.style.height = h + 'mm';
+      });
+    }
+
+    function generateLabels() {
+      if (!selectedBook) {
+        alert('נא לבחור ספר לפני יצירת המדבקות');
+        return;
+      }
+
+      const code = selectedBook.barcode || '';
+      if (!code) {
+        alert('לספר אין ברקוד.');
+        return;
+      }
+
+      const qty = parseInt(document.getElementById('labelQty').value, 10) || 1;
+      const storeName = document.getElementById('storeNameInput').value.trim() || '';
+      const titleSize = parseInt(document.getElementById('titleFontInput').value, 10) || 14;
+      const priceSize = parseInt(document.getElementById('priceFontInput').value, 10) || 14;
+      const storeSize = parseInt(document.getElementById('storeFontInput').value, 10) || 12;
+
+      const area = document.getElementById('previewArea');
+      area.innerHTML = '';
+
+      for (let i = 0; i < qty; i++) {
+        const div = document.createElement('div');
+        div.className = 'label';
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'label-title';
+        titleDiv.textContent = selectedBook.title || '';
+        titleDiv.style.fontSize = titleSize + 'px';
+
+        const priceDiv = document.createElement('div');
+        priceDiv.className = 'price';
+        priceDiv.textContent = (selectedBook.price || 0) + ' ₪';
+        priceDiv.style.fontSize = priceSize + 'px';
+
+        const storeDiv = document.createElement('div');
+        storeDiv.className = 'store-name';
+        storeDiv.textContent = storeName;
+        storeDiv.style.fontSize = storeSize + 'px';
+
+        const shelfDiv = document.createElement('div');
+        shelfDiv.className = 'shelf';
+        shelfDiv.textContent = 'מדף: ' + (selectedBook.shelf || '');
+
+        const img = document.createElement('img');
+        img.className = 'barcode-img';
+        img.alt = 'ברקוד';
+        img.src =
+          'https://barcode.tec-it.com/barcode.ashx?data=' +
+          encodeURIComponent(code) +
+          '&code=Code128&translate-esc=on';
+
+        div.appendChild(titleDiv);
+        div.appendChild(priceDiv);
+        if (storeName) {
+          div.appendChild(storeDiv);
+        }
+        div.appendChild(img);
+        div.appendChild(shelfDiv);
+
+        area.appendChild(div);
+      }
+
+      applyLabelLayout();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      ['labelsPerRowInput', 'labelWidthInput', 'labelHeightInput'].forEach(id => {
+        const el = document.getElementById(id);
+        el.addEventListener('change', applyLabelLayout);
+        el.addEventListener('input', applyLabelLayout);
+      });
+    });
+  </script>
+</body>
+</html>

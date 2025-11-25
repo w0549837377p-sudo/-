@@ -1,0 +1,456 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "barcode": "222000222",
+      "title": "נהרי אש",
+      "author": "ר שמעלה זעליכובער",
+      "publisher": null,
+      "price": 100,
+      "shelf": "22",
+      "current_qty": 6,
+      "created_at": "2025-11-05T08:01:57.126Z"
+    },
+    {
+      "id": 2,
+      "barcode": "220022",
+      "title": "נהרי אש",
+      "author": "ר שימעלה זעליכובער",
+      "publisher": null,
+      "price": 100,
+      "shelf": "22",
+      "current_qty": 7,
+      "created_at": "2025-11-05T09:11:32.265Z"
+    },
+    {
+      "id": 3,
+      "barcode": "333000333",
+      "title": "משניות",
+      "author": "ר שימעלה זעליכובער",
+      "publisher": null,
+      "price": 100,
+      "shelf": "22",
+      "current_qty": 8,
+      "created_at": "2025-11-05T09:12:29.771Z"
+    },
+    {
+      "id": 4,
+      "barcode": "B000004",
+      "title": "סידור הרשש",
+      "author": "רשש",
+      "publisher": "גוטליב",
+      "price": 50,
+      "shelf": "30",
+      "current_qty": 5,
+      "created_at": "2025-11-05T12:04:19.649Z"
+    },
+    {
+      "id": 5,
+      "barcode": "B514118",
+      "title": "טהרת הקודש",
+      "author": "",
+      "publisher": "",
+      "price": 70,
+      "shelf": "33",
+      "current_qty": 33,
+      "created_at": "2025-11-06T07:51:54.123Z"
+    },
+    {
+      "id": 6,
+      "barcode": "0556725354",
+      "title": "בינדר יוסף",
+      "author": "",
+      "publisher": "",
+      "price": 0,
+      "shelf": "",
+      "current_qty": 0,
+      "created_at": "2025-11-06T10:27:22.812Z"
+    },
+    {
+      "id": 7,
+      "barcode": "0533186106",
+      "title": "בנדיקט יעקב יהודה",
+      "author": "",
+      "publisher": "",
+      "price": 0,
+      "shelf": "",
+      "current_qty": 0,
+      "created_at": "2025-11-06T10:29:46.813Z"
+    },
+    {
+      "id": 8,
+      "barcode": "B036926",
+      "title": "יוסיפון",
+      "author": "",
+      "publisher": "גיטלר",
+      "price": 50,
+      "shelf": "26",
+      "current_qty": 2,
+      "created_at": "2025-11-07T08:10:37.004Z"
+    },
+    {
+      "id": 9,
+      "barcode": "B730108",
+      "title": "קדושה וצניעות",
+      "author": "ר דניאל פריש",
+      "publisher": "מתוק מדבש",
+      "price": 60,
+      "shelf": "",
+      "current_qty": 3,
+      "created_at": "2025-11-07T09:28:50.125Z"
+    },
+    {
+      "id": 10,
+      "barcode": "606795076383",
+      "title": "תהילים PU מודפס וורוד 21 ס\"מ",
+      "author": "",
+      "publisher": "עוז והדר",
+      "price": 49,
+      "shelf": "",
+      "current_qty": 3,
+      "created_at": "2025-11-07T09:43:02.909Z"
+    },
+    {
+      "id": 11,
+      "barcode": "1234",
+      "title": "מגלה עמוקות",
+      "author": "",
+      "publisher": "",
+      "shelf": "22",
+      "price": 300,
+      "initial_qty": 13,
+      "current_qty": 13
+    },
+    {
+      "id": 12,
+      "barcode": "330033",
+      "title": "ישמח ישראל",
+      "author": "",
+      "publisher": "",
+      "shelf": "300",
+      "price": 70,
+      "initial_qty": 3,
+      "current_qty": 3
+    }
+  ],
+  "sellers": [
+    {
+      "id": 1,
+      "name": "נפתלי בינדר",
+      "barcode": "313287344",
+      "active": true,
+      "created_at": "2025-11-05T08:01:16.740Z"
+    },
+    {
+      "id": 2,
+      "name": "יוסף",
+      "barcode": "0556799904",
+      "active": true,
+      "created_at": "2025-11-05T11:41:15.465Z"
+    },
+    {
+      "id": 3,
+      "name": "בינדר יוסף",
+      "barcode": "0556725354",
+      "active": true,
+      "created_at": "2025-11-06T10:26:56.113Z"
+    },
+    {
+      "id": 4,
+      "name": "בנדיקט יעקב יהודה",
+      "barcode": "0533186106",
+      "active": true,
+      "created_at": "2025-11-06T10:36:21.660Z"
+    }
+  ],
+  "stockMovements": [
+    {
+      "id": 1,
+      "type": "out",
+      "bookBarcode": "222000222",
+      "qty": 1,
+      "sellerBarcode": "313287344",
+      "date": "2025-11-06T06:33:53.495Z"
+    },
+    {
+      "id": 2,
+      "type": "out",
+      "bookBarcode": "222000222",
+      "qty": 1,
+      "sellerBarcode": "313287344",
+      "date": "2025-11-06T07:35:57.970Z"
+    },
+    {
+      "id": 3,
+      "type": "in",
+      "bookBarcode": "B514118",
+      "qty": 15,
+      "note": "מלאי התחלתי",
+      "date": "2025-11-06T07:51:54.123Z"
+    },
+    {
+      "id": 4,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "sellerBarcode": "313287344",
+      "date": "2025-11-06T08:16:14.730Z"
+    },
+    {
+      "id": 5,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "sellerBarcode": "313287344",
+      "date": "2025-11-06T08:16:29.793Z"
+    },
+    {
+      "id": 6,
+      "type": "in",
+      "bookBarcode": "B514118",
+      "qty": 20,
+      "note": "",
+      "date": "2025-11-06T08:16:57.945Z"
+    },
+    {
+      "id": 7,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "sellerBarcode": "0556799904",
+      "date": "2025-11-06T08:20:56.308Z"
+    },
+    {
+      "id": 8,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "note": "מכירה על ידי בנדיקט יעקב יהודה",
+      "date": "2025-11-06T13:41:16.533Z"
+    },
+    {
+      "id": 9,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "note": "מכירה על ידי בנדיקט יעקב יהודה",
+      "date": "2025-11-06T15:24:50.184Z"
+    },
+    {
+      "id": 10,
+      "type": "in",
+      "bookBarcode": "B036926",
+      "qty": 3,
+      "note": "מלאי התחלתי",
+      "date": "2025-11-07T08:10:37.004Z"
+    },
+    {
+      "id": 11,
+      "type": "out",
+      "bookBarcode": "B036926",
+      "qty": 1,
+      "note": "מכירה על ידי בנדיקט יעקב יהודה",
+      "date": "2025-11-07T08:10:57.515Z"
+    },
+    {
+      "id": 12,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "note": "מכירה על ידי בנדיקט יעקב יהודה",
+      "date": "2025-11-07T09:21:13.939Z"
+    },
+    {
+      "id": 13,
+      "type": "out",
+      "bookBarcode": "B514118",
+      "qty": 1,
+      "note": "מכירה על ידי בנדיקט יעקב יהודה",
+      "date": "2025-11-07T09:21:54.330Z"
+    },
+    {
+      "id": 14,
+      "type": "in",
+      "bookBarcode": "B730108",
+      "qty": 3,
+      "note": "מלאי התחלתי",
+      "date": "2025-11-07T09:28:50.125Z"
+    },
+    {
+      "id": 15,
+      "type": "in",
+      "bookBarcode": "B514118",
+      "qty": 5,
+      "note": "",
+      "date": "2025-11-07T09:39:56.577Z"
+    },
+    {
+      "id": 16,
+      "type": "in",
+      "bookBarcode": "606795076383",
+      "qty": 3,
+      "note": "מלאי התחלתי",
+      "date": "2025-11-07T09:43:02.909Z"
+    },
+    {
+      "id": 17,
+      "type": "out",
+      "bookBarcode": "222000222",
+      "qty": 1,
+      "note": "עסקה מהירה ממסך הבית למוכר בינדר יוסף",
+      "date": "2025-11-20T22:07:24.829Z"
+    },
+    {
+      "id": 18,
+      "type": "out",
+      "bookBarcode": "220022",
+      "qty": 1,
+      "note": "עסקה מהירה ממסך הבית למוכר בינדר יוסף",
+      "date": "2025-11-20T22:07:24.829Z"
+    },
+    {
+      "id": 19,
+      "type": "out",
+      "bookBarcode": "222000222",
+      "qty": 1,
+      "note": "עסקה מהירה ממסך הבית למוכר נפתלי בינדר",
+      "date": "2025-11-24T06:42:57.058Z"
+    }
+  ],
+  "sales": [
+    {
+      "id": 1,
+      "date": "2025-11-06T06:33:53.495Z",
+      "bookBarcode": "222000222",
+      "bookTitle": "נהרי אש",
+      "sellerBarcode": "313287344",
+      "sellerName": "נפתלי בינדר",
+      "qty": 1,
+      "price": 100,
+      "total": 100
+    },
+    {
+      "id": 2,
+      "date": "2025-11-06T07:35:57.970Z",
+      "bookBarcode": "222000222",
+      "bookTitle": "נהרי אש",
+      "sellerBarcode": "313287344",
+      "sellerName": "נפתלי בינדר",
+      "qty": 1,
+      "price": 100,
+      "total": 100
+    },
+    {
+      "id": 3,
+      "date": "2025-11-06T08:16:14.730Z",
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "313287344",
+      "sellerName": "נפתלי בינדר",
+      "qty": 1,
+      "price": 70,
+      "total": 70
+    },
+    {
+      "id": 4,
+      "date": "2025-11-06T08:16:29.793Z",
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "313287344",
+      "sellerName": "נפתלי בינדר",
+      "qty": 1,
+      "price": 70,
+      "total": 70
+    },
+    {
+      "id": 5,
+      "date": "2025-11-06T08:20:56.308Z",
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "0556799904",
+      "sellerName": "יוסף",
+      "qty": 1,
+      "price": 70,
+      "total": 70
+    },
+    {
+      "id": 6,
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "0533186106",
+      "sellerName": "בנדיקט יעקב יהודה",
+      "qty": 1,
+      "price": 70,
+      "total": 70,
+      "date": "2025-11-06T13:41:16.533Z"
+    },
+    {
+      "id": 7,
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "0533186106",
+      "sellerName": "בנדיקט יעקב יהודה",
+      "qty": 1,
+      "price": 70,
+      "total": 70,
+      "date": "2025-11-06T15:24:50.184Z"
+    },
+    {
+      "id": 8,
+      "bookBarcode": "B036926",
+      "bookTitle": "יוסיפון",
+      "sellerBarcode": "0533186106",
+      "sellerName": "בנדיקט יעקב יהודה",
+      "qty": 1,
+      "price": 50,
+      "total": 50,
+      "date": "2025-11-07T08:10:57.515Z"
+    },
+    {
+      "id": 9,
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "0533186106",
+      "sellerName": "בנדיקט יעקב יהודה",
+      "qty": 1,
+      "price": 70,
+      "total": 70,
+      "date": "2025-11-07T09:21:13.939Z"
+    },
+    {
+      "id": 10,
+      "bookBarcode": "B514118",
+      "bookTitle": "טהרת הקודש",
+      "sellerBarcode": "0533186106",
+      "sellerName": "בנדיקט יעקב יהודה",
+      "qty": 1,
+      "price": 70,
+      "total": 70,
+      "date": "2025-11-07T09:21:54.330Z"
+    },
+    {
+      "id": 11,
+      "bookBarcode": "222000222",
+      "sellerBarcode": "0556725354",
+      "qty": 1,
+      "total": 100,
+      "date": "2025-11-20T22:07:24.829Z"
+    },
+    {
+      "id": 12,
+      "bookBarcode": "220022",
+      "sellerBarcode": "0556725354",
+      "qty": 1,
+      "total": 100,
+      "date": "2025-11-20T22:07:24.829Z"
+    },
+    {
+      "id": 13,
+      "bookBarcode": "222000222",
+      "sellerBarcode": "313287344",
+      "qty": 1,
+      "total": 100,
+      "date": "2025-11-24T06:42:57.058Z"
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+// public/js/jsbarcode-local.js
+// מחולל ברקוד מקומי בפורמט Code39 (ללא תלות ב-JsBarcode חיצוני)
+
+(function () {
+  // טבלת דוגמאות של Code 39: n = צר, w = רחב (9 אלמנטים לכל תו, מתחיל בבר)
+  const CODE39_MAP = {
+    '0': 'nnnwwnwnn',
+    '1': 'wnnwnnnnw',
+    '2': 'nnwwnnnnw',
+    '3': 'wnwwnnnnn',
+    '4': 'nnnwwnnnw',
+    '5': 'wnnwwnnnn',
+    '6': 'nnwwwnnnn',
+    '7': 'nnnwnnwnw',
+    '8': 'wnnwnnwnn',
+    '9': 'nnwwnnwnn',
+    'A': 'wnnnnwnnw',
+    'B': 'nnwnnwnnw',
+    'C': 'wnwnnwnnn',
+    'D': 'nnnnwwnnw',
+    'E': 'wnnnwwnnn',
+    'F': 'nnwnwwnnn',
+    'G': 'nnnnnwwnw',
+    'H': 'wnnnnwwnn',
+    'I': 'nnwnnwwnn',
+    'J': 'nnnnwwwnn',
+    'K': 'wnnnnnnww',
+    'L': 'nnwnnnnww',
+    'M': 'wnwnnnnwn',
+    'N': 'nnnnwnnww',
+    'O': 'wnnnwnnwn',
+    'P': 'nnwnwnnwn',
+    'Q': 'nnnnnnwww',
+    'R': 'wnnnnnwwn',
+    'S': 'nnwnnnwwn',
+    'T': 'nnnnwnwwn',
+    'U': 'wwnnnnnnw',
+    'V': 'nwwnnnnnw',
+    'W': 'wwwnnnnnn',
+    'X': 'nwnnwnnnw',
+    'Y': 'wwnnwnnnn',
+    'Z': 'nwwnwnnnn',
+    '-': 'nwnnnnwnw',
+    '.': 'wwnnnnwnn',
+    ' ': 'nwwnnnwnn',
+    '*': 'nwnnwnwnn',
+    '$': 'nwnwnwnnn',
+    '/': 'nwnwnnwnn',
+    '+': 'nwnnnwnwn',
+    '%': 'nnnwnwnwn'
+  };
+
+  function drawCode39(svgElement, text, options) {
+    if (!svgElement) {
+      throw new Error("JsBarcode: לא נמצא אלמנט יעד");
+    }
+
+    // ננקה את ה-SVG
+    while (svgElement.firstChild) {
+      svgElement.removeChild(svgElement.firstChild);
+    }
+
+    const opts = options || {};
+    const narrow = opts.narrowWidth || 2;   // רוחב קו צר בפיקסלים
+    const wide   = opts.wideWidth   || 4;   // רוחב קו רחב
+    const height = opts.height      || 60;  // גובה הברקוד
+
+    // Code39 חייב להתחיל ולהסתיים ב־*
+    const data = ('*' + String(text || '').toUpperCase() + '*');
+
+    let x = 0;
+    svgElement.setAttribute('height', height);
+
+    for (let charIndex = 0; charIndex < data.length; charIndex++) {
+      const ch = data[charIndex];
+      const pattern = CODE39_MAP[ch];
+
+      if (!pattern) {
+        console.warn('JsBarcode (local): תו לא נתמך ב-Code39:', ch);
+        continue;
+      }
+
+      // pattern = 9 תווים של 'n'/'w', מתחיל בבר, מתחלף בר/רווח
+      for (let i = 0; i < pattern.length; i++) {
+        const isBar = (i % 2 === 0);
+        const isWide = pattern[i] === 'w';
+        const width = isWide ? wide : narrow;
+
+        if (isBar) {
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x);
+          rect.setAttribute('y', 0);
+          rect.setAttribute('width', width);
+          rect.setAttribute('height', height);
+          rect.setAttribute('fill', '#000');
+          svgElement.appendChild(rect);
+        }
+
+        x += width;
+      }
+
+      // רווח צר בין תווים
+      x += narrow;
+    }
+
+    svgElement.setAttribute('viewBox', '0 0 ' + x + ' ' + height);
+    svgElement.setAttribute('width', x);
+  }
+
+  /**
+   * ממשק דמוי JsBarcode:
+   * JsBarcode('#barcodeSvg', '123456', { height: 80 })
+   */
+  function JsBarcode(target, text, options) {
+    let svgElement = target;
+
+    if (typeof target === 'string') {
+      svgElement = document.querySelector(target);
+    }
+
+    if (!svgElement) {
+      throw new Error("JsBarcode: אלמנט היעד לא נמצא");
+    }
+
+    if (svgElement.tagName && svgElement.tagName.toLowerCase() !== 'svg') {
+      throw new Error("JsBarcode: אלמנט היעד חייב להיות SVG");
+    }
+
+    drawCode39(svgElement, text, options);
+    return svgElement;
+  }
+
+  // חושפים גלובלי – בדיוק כמו הספרייה המקורית
+  window.JsBarcode = JsBarcode;
+})();

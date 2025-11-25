@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>ניהול ספרים ומוכרים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      padding: 1.5rem;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.35), rgba(230,240,255,0.2)),
+        url("books-bg.jpg") center/cover no-repeat fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1150px;
+      background: rgba(255,255,255,0.96);
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(15,23,42,0.3);
+      padding: 1.7rem 1.6rem 1.4rem;
+    }
+
+    a.back {
+      display: inline-block;
+      margin-bottom: 0.6rem;
+      font-size: 0.85rem;
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+      text-align: right;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #4b5563;
+      margin-bottom: 0.9rem;
+      text-align: right;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 330px) minmax(0, 1fr);
+      gap: 1.2rem;
+    }
+
+    .card {
+      background: #f9fafb;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      padding: 0.9rem 0.9rem 0.8rem;
+    }
+
+    .card h2 {
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: #374151;
+      margin-bottom: 0.1rem;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 0.85rem;
+      margin-bottom: 0.45rem;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79,70,229,0.4);
+    }
+
+    .field-row {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .field-row > div {
+      flex: 1;
+    }
+
+    .btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.2rem;
+      justify-content: flex-start;
+    }
+
+    .msg {
+      font-size: 0.8rem;
+      min-height: 1rem;
+      margin-top: 0.2rem;
+    }
+
+    .msg.ok { color: #16a34a; }
+    .msg.error { color: #dc2626; }
+
+    .table-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .table-wrapper {
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      max-height: 480px;
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #f3f4f6;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 0.25rem 0.3rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .col-actions {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="index.html" class="back">← חזרה למסך הבית</a>
+
+    <h1>ניהול ספרים ומוכרים</h1>
+    <p class="subtitle">כאן מנהלים ספרים במלאי, כולל יצירה, עדכון ומחיקה.</p>
+
+    <div class="layout">
+      <!-- טופס ספר -->
+      <div class="card">
+        <h2 id="formTitle">הוספת ספר חדש</h2>
+
+        <input type="hidden" id="bookId">
+
+        <label for="bookBarcode">ברקוד</label>
+        <input type="text" id="bookBarcode" placeholder="אם ריק – יווצר אוטומטית">
+
+        <label for="bookTitle">שם ספר</label>
+        <input type="text" id="bookTitle" placeholder="חובה">
+
+        <div class="field-row">
+          <div>
+            <label for="bookAuthor">מחבר</label>
+            <input type="text" id="bookAuthor">
+          </div>
+          <div>
+            <label for="bookPublisher">הוצאה</label>
+            <input type="text" id="bookPublisher">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div>
+            <label for="bookShelf">מדף</label>
+            <input type="text" id="bookShelf">
+          </div>
+          <div>
+            <label for="bookPrice">מחיר (₪)</label>
+            <input type="number" id="bookPrice" step="0.01" min="0" value="0">
+          </div>
+        </div>
+
+        <label for="bookInitialQty">כמות התחלתית (בספר חדש)</label>
+        <input type="number" id="bookInitialQty" min="0" value="0">
+
+        <div class="form-buttons">
+          <button class="btn btn-primary" type="button" id="saveBookBtn">שמירה</button>
+          <button class="btn btn-secondary" type="button" id="resetFormBtn">ניקוי טופס</button>
+        </div>
+
+        <div id="formMsg" class="msg"></div>
+      </div>
+
+      <!-- טבלת ספרים -->
+      <div class="card">
+        <h2>ספרים במערכת</h2>
+
+        <div class="table-controls">
+          <input type="text" id="bookSearch" placeholder="חיפוש לפי שם, מחבר, הוצאה, מדף, ברקוד…">
+          <button class="btn btn-secondary" type="button" id="clearSearchBtn">איפוס חיפוש</button>
+          <button class="btn btn-danger" type="button" id="deleteSelectedBtn">מחיקת ספרים מסומנים</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>ID</th>
+                <th>ברקוד</th>
+                <th>שם ספר</th>
+                <th>מחבר</th>
+                <th>הוצאה</th>
+                <th>מדף</th>
+                <th>מחיר</th>
+                <th>כמות נוכחית</th>
+                <th class="col-actions">פעולות</th>
+              </tr>
+            </thead>
+            <tbody id="booksTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="tableMsg" class="msg"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let books = [];
+    const selectedIds = new Set();
+
+    function setFormMsg(text, type) {
+      const el = document.getElementById('formMsg');
+      el.textContent = text || '';
+      el.className = 'msg ' + (type || '');
+    }
+
+    function setTableMsg(text, type) {
+      const el = document.getElementById('tableMsg');
+      el.textContent = text || '';
+      el.className = 'msg ' + (type || '');
+    }
+
+    function resetForm() {
+      document.getElementById('bookId').value = '';
+      document.getElementById('bookBarcode').value = '';
+      document.getElementById('bookTitle').value = '';
+      document.getElementById('bookAuthor').value = '';
+      document.getElementById('bookPublisher').value = '';
+      document.getElementById('bookShelf').value = '';
+      document.getElementById('bookPrice').value = '0';
+      document.getElementById('bookInitialQty').value = '0';
+      document.getElementById('formTitle').textContent = 'הוספת ספר חדש';
+      setFormMsg('', '');
+    }
+
+    async function loadBooks() {
+      setTableMsg('', '');
+      try {
+        const res = await fetch('/api/books');
+        const data = await res.json();
+        books = Array.isArray(data) ? data : [];
+        selectedIds.clear();
+        document.getElementById('selectAll').checked = false;
+        renderBooksTable();
+      } catch (err) {
+        console.error(err);
+        setTableMsg('שגיאה בטעינת רשימת הספרים.', 'error');
+      }
+    }
+
+    function renderBooksTable() {
+      const tbody = document.getElementById('booksTableBody');
+      tbody.innerHTML = '';
+
+      const q = document.getElementById('bookSearch').value.trim().toLowerCase();
+
+      const filtered = books.filter(b => {
+        if (!q) return true;
+        const txt = [
+          b.title || '',
+          b.author || '',
+          b.publisher || '',
+          b.barcode || '',
+          b.shelf || ''
+        ].join(' ').toLowerCase();
+        return txt.includes(q);
+      });
+
+      filtered.forEach(b => {
+        const tr = document.createElement('tr');
+
+        // checkbox
+        const tdSel = document.createElement('td');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = selectedIds.has(b.id);
+        cb.addEventListener('change', () => {
+          if (cb.checked) selectedIds.add(b.id);
+          else selectedIds.delete(b.id);
+        });
+        tdSel.appendChild(cb);
+        tr.appendChild(tdSel);
+
+        const mk = text => {
+          const td = document.createElement('td');
+          td.textContent = text;
+          return td;
+        };
+
+        tr.appendChild(mk(b.id || ''));
+        tr.appendChild(mk(b.barcode || ''));
+        tr.appendChild(mk(b.title || ''));
+        tr.appendChild(mk(b.author || ''));
+        tr.appendChild(mk(b.publisher || ''));
+        tr.appendChild(mk(b.shelf || ''));
+        tr.appendChild(mk(b.price != null ? Number(b.price).toFixed(2) : '0.00'));
+        tr.appendChild(mk(b.current_qty != null ? b.current_qty : ''));
+
+        const tdActions = document.createElement('td');
+        tdActions.className = 'col-actions';
+
+        const editBtn = document.createElement('button');
+        editBtn.type = 'button';
+        editBtn.className = 'btn btn-secondary btn-sm';
+        editBtn.textContent = 'עריכה';
+        editBtn.addEventListener('click', () => fillFormForEdit(b));
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn btn-danger btn-sm';
+        delBtn.textContent = 'מחיקה';
+        delBtn.style.marginRight = '0.25rem';
+        delBtn.addEventListener('click', () => deleteSingleBook(b.id));
+
+        tdActions.appendChild(editBtn);
+        tdActions.appendChild(delBtn);
+        tr.appendChild(tdActions);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    function fillFormForEdit(book) {
+      document.getElementById('bookId').value = book.id || '';
+      document.getElementById('bookBarcode').value = book.barcode || '';
+      document.getElementById('bookTitle').value = book.title || '';
+      document.getElementById('bookAuthor').value = book.author || '';
+      document.getElementById('bookPublisher').value = book.publisher || '';
+      document.getElementById('bookShelf').value = book.shelf || '';
+      document.getElementById('bookPrice').value = book.price != null ? book.price : 0;
+      document.getElementById('bookInitialQty').value = 0; // בעדכון לא משנים מלאי התחלתי
+      document.getElementById('formTitle').textContent = 'עריכת ספר #' + (book.id || '');
+      setFormMsg('', '');
+    }
+
+    async function saveBook() {
+      const id = document.getElementById('bookId').value;
+      const barcode = document.getElementById('bookBarcode').value.trim();
+      const title = document.getElementById('bookTitle').value.trim();
+      const author = document.getElementById('bookAuthor').value.trim();
+      const publisher = document.getElementById('bookPublisher').value.trim();
+      const shelf = document.getElementById('bookShelf').value.trim();
+      let price = document.getElementById('bookPrice').value;
+      let initialQty = document.getElementById('bookInitialQty').value;
+
+      if (!title) {
+        setFormMsg('חסר שם ספר.', 'error');
+        return;
+      }
+
+      price = price !== '' ? Number(price) : 0;
+      initialQty = initialQty !== '' ? parseInt(initialQty, 10) : 0;
+
+      const payload = {
+        barcode,
+        title,
+        author,
+        publisher,
+        shelf,
+        price,
+        initialQty
+      };
+      if (id) payload.id = Number(id);
+
+      setFormMsg('שומר...', '');
+      try {
+        const res = await fetch('/api/books', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok || !data || data.success === false) {
+          setFormMsg(data && data.error ? data.error : 'שגיאה בשמירת הספר.', 'error');
+          return;
+        }
+
+        setFormMsg('נשמר בהצלחה.', 'ok');
+        await loadBooks();
+        // לא מאפס מיד כדי שאפשר לערוך שוב. אם רוצים טופס חדש – לחצו "ניקוי טופס".
+      } catch (err) {
+        console.error(err);
+        setFormMsg('שגיאה בתקשורת עם השרת.', 'error');
+      }
+    }
+
+    async function deleteSingleBook(id) {
+      if (!id) return;
+      if (!confirm('למחוק ספר זה?')) return;
+
+      try {
+        const res = await fetch('/api/books/' + id, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok || !data || data.success === false) {
+          setTableMsg(data && data.error ? data.error : 'שגיאה במחיקת הספר.', 'error');
+          return;
+        }
+        setTableMsg('ספר נמחק.', 'ok');
+        await loadBooks();
+      } catch (err) {
+        console.error(err);
+        setTableMsg('שגיאה בתקשורת עם השרת.', 'error');
+      }
+    }
+
+    async function deleteSelectedBooks() {
+      if (!selectedIds.size) {
+        setTableMsg('לא נבחרו ספרים למחיקה.', 'error');
+        return;
+      }
+      if (!confirm('למחוק ' + selectedIds.size + ' ספרים מסומנים?')) return;
+
+      try {
+        const res = await fetch('/api/books/bulk-delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: Array.from(selectedIds) })
+        });
+        const data = await res.json();
+        if (!res.ok || !data || data.success === false) {
+          setTableMsg(data && data.error ? data.error : 'שגיאה במחיקה מרובה.', 'error');
+          return;
+        }
+        setTableMsg('נמחקו ' + (data.deleted || 0) + ' ספרים.', 'ok');
+        await loadBooks();
+      } catch (err) {
+        console.error(err);
+        setTableMsg('שגיאה בתקשורת עם השרת.', 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('saveBookBtn').addEventListener('click', saveBook);
+      document.getElementById('resetFormBtn').addEventListener('click', resetForm);
+      document.getElementById('bookSearch').addEventListener('input', renderBooksTable);
+      document.getElementById('clearSearchBtn').addEventListener('click', () => {
+        document.getElementById('bookSearch').value = '';
+        renderBooksTable();
+      });
+      document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedBooks);
+
+      document.getElementById('selectAll').addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        selectedIds.clear();
+        books.forEach(b => {
+          if (checked) selectedIds.add(b.id);
+        });
+        renderBooksTable();
+      });
+
+      resetForm();
+      loadBooks();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+﻿<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>מערכת ניהול ספרים</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      direction: rtl;
+      text-align: center;
+      padding: 1.5rem;
+      color: #222;
+      background:
+        /* שכבה בהירה יותר חלשה כדי שהתמונה תבלוט */
+        linear-gradient(120deg, rgba(255,255,255,0.35), rgba(230,240,255,0.2)),
+        url("books-bg.jpg") center/cover no-repeat fixed;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 24px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      padding: 2.2rem 2rem 1.6rem;
+      position: relative;
+      text-align: right;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.9rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin-bottom: 1.6rem;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .buttons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      box-shadow: 0 8px 20px rgba(55, 65, 81, 0.25);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+    }
+
+    .buttons a:nth-child(2n) {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+    }
+
+    .buttons a:nth-child(3n) {
+      background: linear-gradient(135deg, #059669, #10b981);
+    }
+
+    .buttons a:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(15, 23, 42, 0.27);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 0.2rem;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .chip {
+      position: absolute;
+      top: 1.1rem;
+      left: 1.4rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      font-size: 0.75rem;
+      color: #374151;
+    }
+
+    .primary-link {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.4rem;
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      background: rgba(255, 255, 255, 0.95);
+      color: #4f46e5;
+      cursor: pointer;
+    }
+
+    /* --- חלון עסקה מהירה --- */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 50;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 720px;
+      background: #f9fafb;
+      border-radius: 20px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.4);
+      padding: 1.4rem 1.6rem 1.2rem;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .modal-subtitle {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+      align-items: center;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: #374151;
+    }
+
+    input[type="text"], input[type="number"] {
+      padding: 0.35rem 0.5rem;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 1px rgba(79, 70, 229, 0.4);
+    }
+
+    .barcode-input {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .seller-input {
+      min-width: 160px;
+    }
+
+    .seller-name {
+      font-size: 0.85rem;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .table-wrapper {
+      max-height: 260px;
+      overflow: auto;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #f3f4f6;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 0.35rem 0.4rem;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .qty-input {
+      width: 70px;
+      text-align: center;
+    }
+
+    .total-cell {
+      font-weight: 600;
+    }
+
+    .remove-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #ef4444;
+    }
+
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    .summary {
+      font-size: 0.95rem;
+    }
+
+    .summary strong {
+      font-size: 1.05rem;
+      color: #111827;
+    }
+
+    .btn {
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .msg {
+      font-size: 0.8rem;
+      color: #ef4444;
+      min-height: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 1.4rem 1.1rem 1.1rem;
+        border-radius: 20px;
+      }
+      .modal {
+        padding: 1.1rem 1.1rem 0.9rem;
+      }
+      th, td { font-size: 0.76rem; }
+      .qty-input { width: 60px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="chip">ניהול חנות ספרים</div>
+    <button class="primary-link" type="button" id="openQuickSaleBtn">עסקה מהירה</button>
+
+    <h1>📚 מערכת ניהול ספרים</h1>
+    <p class="subtitle">בחר מודול עבודה – או בצע עסקה מהירה ישירות מהמסך הראשי</p>
+    
+    <div class="buttons">
+      <a href="pos.html">עמדת מכירה</a>
+      <a href="admin.html">ניהול ספרים ומוכרים</a>
+      <a href="stock.html">מצב מלאי ודוחות</a>
+      <a href="labels.html">הדפסת ברקודים</a>
+      <a href="search.html">חיפוש</a>
+      <a href="import.html">ייבוא מאקסל</a>
+    </div>
+
+    <footer>בנדיקט ספרים © 2025</footer>
+  </div>
+
+  <!-- חלון עסקה מהירה -->
+  <div class="modal-backdrop" id="quickSaleBackdrop" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">עסקה חדשה / חישוב קופה</div>
+          <div class="modal-subtitle">
+            1. סרוק ברקוד מוכר &nbsp;&nbsp; 2. סרוק ספרים אחד אחרי השני &nbsp;&nbsp; 3. הורדה מהמלאי ושמירה בדוחות.
+          </div>
+        </div>
+        <button class="modal-close" type="button" id="closeQuickSaleBtn">&times;</button>
+      </div>
+
+      <div class="row">
+        <label for="quickSellerBarcode">מוכר (ברקוד):</label>
+        <input type="text" id="quickSellerBarcode" class="seller-input" autocomplete="off"
+               placeholder="סריקה / הקלדת ברקוד מוכר ואז Enter">
+        <span id="quickSellerName" class="seller-name"></span>
+      </div>
+
+      <div class="row">
+        <label for="quickBarcode">ברקוד ספר:</label>
+        <input type="text" id="quickBarcode" class="barcode-input" autocomplete="off" inputmode="numeric"
+               placeholder="סריקה / הקלדת ברקוד ספר ואז Enter">
+      </div>
+
+      <div class="msg" id="quickMsg"></div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>שם ספר</th>
+              <th>ברקוד</th>
+              <th>מחיר</th>
+              <th>כמות</th>
+              <th>סך שורה</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="quickTableBody">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-footer">
+        <div class="summary">
+          סה״כ לתשלום: <strong><span id="quickTotal">0</span> ₪</strong>
+        </div>
+        <div>
+          <button class="btn btn-secondary" type="button" id="quickClearBtn">איפוס עסקה</button>
+          <button class="btn btn-primary" type="button" id="quickFinalizeBtn">הורדה מהמלאי ושמירה בדוחות</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const quickItems = [];
+    let quickSeller = null;
+
+    function openQuickSaleModal() {
+      const backdrop = document.getElementById('quickSaleBackdrop');
+      backdrop.style.display = 'flex';
+      setTimeout(() => {
+        const input = document.getElementById('quickBarcode');
+        if (input) input.focus();
+      }, 50);
+    }
+
+    function closeQuickSaleModal() {
+      document.getElementById('quickSaleBackdrop').style.display = 'none';
+    }
+
+    function setQuickMsg(msg, isError) {
+      const el = document.getElementById('quickMsg');
+      el.textContent = msg || '';
+      el.style.color = isError ? '#ef4444' : '#16a34a';
+    }
+
+    function updateQuickTable() {
+      const tbody = document.getElementById('quickTableBody');
+      tbody.innerHTML = '';
+      let total = 0;
+
+      quickItems.forEach((item, index) => {
+        const price = Number(item.price) || 0;
+        const rowTotal = price * item.qty;
+        total += rowTotal;
+
+        const tr = document.createElement('tr');
+
+        const tdIndex = document.createElement('td');
+        tdIndex.textContent = index + 1;
+        tr.appendChild(tdIndex);
+
+        const tdTitle = document.createElement('td');
+        tdTitle.textContent = item.title || '';
+        tr.appendChild(tdTitle);
+
+        const tdBarcode = document.createElement('td');
+        tdBarcode.textContent = item.barcode;
+        tr.appendChild(tdBarcode);
+
+        const tdPrice = document.createElement('td');
+        tdPrice.textContent = price.toFixed(2);
+        tr.appendChild(tdPrice);
+
+        const tdQty = document.createElement('td');
+        const qtyInput = document.createElement('input');
+        qtyInput.type = 'number';
+        qtyInput.min = '1';
+        qtyInput.step = '1';
+        qtyInput.value = item.qty;
+        qtyInput.className = 'qty-input';
+        qtyInput.addEventListener('change', () => {
+          let q = parseInt(qtyInput.value, 10);
+          if (!q || q <= 0) {
+            q = 1;
+            qtyInput.value = '1';
+          }
+          item.qty = q;
+          updateQuickTable();
+        });
+        tdQty.appendChild(qtyInput);
+        tr.appendChild(tdQty);
+
+        const tdRowTotal = document.createElement('td');
+        tdRowTotal.textContent = rowTotal.toFixed(2);
+        tdRowTotal.className = 'total-cell';
+        tr.appendChild(tdRowTotal);
+
+        const tdRemove = document.createElement('td');
+        const btnRemove = document.createElement('button');
+        btnRemove.type = 'button';
+        btnRemove.className = 'remove-btn';
+        btnRemove.textContent = '✕';
+        btnRemove.title = 'הסרת שורה';
+        btnRemove.addEventListener('click', () => {
+          quickItems.splice(index, 1);
+          updateQuickTable();
+        });
+        tdRemove.appendChild(btnRemove);
+        tr.appendChild(tdRemove);
+
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('quickTotal').textContent = total.toFixed(2);
+    }
+
+    async function addBookToQuickSale(barcode) {
+      const cleanCode = (barcode || '').trim();
+      if (!cleanCode) {
+        setQuickMsg('ברקוד ספר ריק', true);
+        return;
+      }
+
+      try {
+        setQuickMsg('', false);
+        const res = await fetch('/api/books/by-barcode/' + encodeURIComponent(cleanCode));
+        const data = await res.json();
+        if (!res.ok || !data || data.success === false) {
+          setQuickMsg(data && data.error ? data.error : 'ספר לא נמצא', true);
+          return;
+        }
+
+        const price = data.price != null ? Number(data.price) : 0;
+        const existing = quickItems.find(it => it.barcode === data.barcode);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          quickItems.push({
+            barcode: data.barcode,
+            title: data.title || '',
+            price: price,
+            qty: 1
+          });
+        }
+
+        updateQuickTable();
+        setQuickMsg('הספר נוסף לעסקה', false);
+      } catch (err) {
+        console.error(err);
+        setQuickMsg('שגיאה בטעינת ספר', true);
+      }
+    }
+
+    async function setQuickSellerByBarcode(barcode) {
+      const cleanCode = (barcode || '').trim();
+      if (!cleanCode) {
+        setQuickMsg('ברקוד מוכר ריק', true);
+        return;
+      }
+
+      try {
+        setQuickMsg('', false);
+        const res = await fetch('/api/sellers/by-barcode/' + encodeURIComponent(cleanCode));
+        const data = await res.json();
+        if (!res.ok || !data || data.success === false) {
+          setQuickMsg(data && data.error ? data.error : 'מוכר לא נמצא', true);
+          document.getElementById('quickSellerName').textContent = '';
+          quickSeller = null;
+          return;
+        }
+
+        quickSeller = {
+          barcode: data.barcode,
+          name: data.name
+        };
+        document.getElementById('quickSellerName').textContent =
+          data.name + ' (ברקוד: ' + data.barcode + ')';
+        setQuickMsg('מוכר נטען לעסקה', false);
+
+        const bookInput = document.getElementById('quickBarcode');
+        if (bookInput) bookInput.focus();
+      } catch (err) {
+        console.error(err);
+        setQuickMsg('שגיאה בטעינת מוכר', true);
+      }
+    }
+
+    async function finalizeQuickSale() {
+      if (!quickSeller) {
+        setQuickMsg('יש לבחור מוכר לעסקה לפני הורדה מהמלאי', true);
+        return;
+      }
+
+      if (!quickItems.length) {
+        setQuickMsg('אין ספרים בעסקה', true);
+        return;
+      }
+
+      if (!confirm('להוריד את כל הספרים ברשימה מהמלאי ולשמור כמכירה?')) {
+        return;
+      }
+
+      const payload = {
+        sellerBarcode: quickSeller.barcode,
+        items: quickItems.map(it => ({
+          barcode: it.barcode,
+          qty: it.qty
+        }))
+      };
+
+      try {
+        const res = await fetch('/api/sales/quick', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok || !data || data.success === false) {
+          setQuickMsg(data && data.error ? data.error : 'שגיאה בעדכון המלאי/מכירה', true);
+          return;
+        }
+
+        quickItems.length = 0;
+        updateQuickTable();
+
+        document.getElementById('quickSellerName').textContent = '';
+        quickSeller = null;
+
+        setQuickMsg(
+          'עסקה נשמרה. סה״כ ' +
+            (data.totalQty || 0) +
+            ' ספרים, ' +
+            (data.totalAmount || 0).toFixed(2) +
+            ' ₪.',
+          false
+        );
+      } catch (err) {
+        console.error(err);
+        setQuickMsg('שגיאה בעדכון המלאי/מכירה', true);
+      }
+    }
+
+    function clearQuickSale() {
+      quickItems.length = 0;
+      quickSeller = null;
+      updateQuickTable();
+      document.getElementById('quickSellerName').textContent = '';
+      document.getElementById('quickSellerBarcode').value = '';
+      document.getElementById('quickBarcode').value = '';
+      setQuickMsg('העסקה אופסה', false);
+      const input = document.getElementById('quickBarcode');
+      if (input) input.focus();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('openQuickSaleBtn').addEventListener('click', openQuickSaleModal);
+      document.getElementById('closeQuickSaleBtn').addEventListener('click', closeQuickSaleModal);
+      document.getElementById('quickFinalizeBtn').addEventListener('click', finalizeQuickSale);
+      document.getElementById('quickClearBtn').addEventListener('click', clearQuickSale);
+
+      const bookInput = document.getElementById('quickBarcode');
+      bookInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const code = bookInput.value;
+          bookInput.value = '';
+          addBookToQuickSale(code);
+        }
+      });
+
+      const sellerInput = document.getElementById('quickSellerBarcode');
+      sellerInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const code = sellerInput.value;
+          sellerInput.value = '';
+          setQuickSellerByBarcode(code);
+        }
+      });
+
+      openQuickSaleModal();
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (document.getElementById('quickSaleBackdrop').style.display !== 'none') {
+            closeQuickSaleModal();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
